@@ -1,21 +1,17 @@
-from airflow import DAG
-from airflow.operators.python import PythonOperator
-from datetime import datetime
+from airflow.sdk import dag, task
+from pendulum import datetime
 
-def hello():
-    print("Hello World 🚀")
-
-with DAG(
-    dag_id="hello_world",
+@dag(
     start_date=datetime(2024, 1, 1),
     schedule="5 9 * * *",
-    catchup=False,
-    tags=["estudo"],
-) as dag:
+    catchup=False
+)
+def hello_world():
 
-    task_hello = PythonOperator(
-        task_id="print_hello",
-        python_callable=hello
-    )
+    @task
+    def hello():
+        print("Hello World 🚀")
 
-task_hello
+    hello()
+
+hello_world()
