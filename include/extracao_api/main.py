@@ -21,27 +21,21 @@ total_posicoes = total / limit
 
 total_offset = math.ceil(total_posicoes)
 
-print("total:", total)
-print("limit:", limit)
-print("offset:", offset)
-print("total_posicoes:", total_posicoes)
-print("total_offset:", total_offset)
 
-resultados_offsets = []
+with open("/usr/local/airflow/include/extracao_api/resultado_api.json", "w", encoding="utf-8") as arquivo:
+    arquivo.write("[\n")
 
-for offset_atual in range(0, total_offset):
-    params["offset"] = offset_atual
+    for i, offset_atual in enumerate(range(0, total_offset)):
+        params["offset"] = offset_atual
 
-    response = requests.get(url, params=params)
-    data_offset = response.json()
-    print("data_offset:", data_offset)
-    resultados_offsets.append(data_offset)
+        response = requests.get(url, params=params)
+        data_offset = response.json()
 
+        print("data_offset:", data_offset)
 
-with open("/usr/local/airflow/include/resultado_api.json", "w", encoding="utf-8") as arquivo:
-    json.dump(
-        resultados_offsets,
-        arquivo,
-        ensure_ascii=False,
-        indent=4
-    )
+        json.dump(data_offset, arquivo, ensure_ascii=False, indent=4)
+
+        if i < total_offset - 1:
+            arquivo.write(",\n")
+
+    arquivo.write("\n]")
